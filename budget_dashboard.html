@@ -16,33 +16,35 @@
   <div id="plot"></div>
 
   <py-script>
-import pandas as pd
-import matplotlib.pyplot as plt
-from pyscript import display
-import asyncio
-from js import fetch
-
-async def load_and_display():
-    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpNBdF8vKtqhSmNhhBm9oKvl1WOKzX6hOqyDKDkL26diSugK99i4AZdsAC070pgEgQQExsQWTKZhT8/pub?output=csv"
-    response = await fetch(url)
-    csv_text = await response.text()
-
-    from io import StringIO
-    df = pd.read_csv(StringIO(csv_text))
-
-    summary = df.groupby('Category')['Amount'].sum()
-
-    display(summary.to_frame(), target="summary")
-
-    fig, ax = plt.subplots()
-    summary.plot(kind='bar', ax=ax, color='cornflowerblue')
-    ax.set_title('Dépenses par catégorie')
-    ax.set_ylabel('Montant (€)')
-    display(fig, target="plot")
-    plt.close(fig)
-
-asyncio.ensure_future(load_and_display())
+  import pandas as pd
+  import matplotlib.pyplot as plt
+  from pyscript import display
+  import asyncio
+  from js import fetch
+  
+  async def load_and_display():
+      url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpNBdF8vKtqhSmNhhBm9oKvl1WOKzX6hOqyDKDkL26diSugK99i4AZdsAC070pgEgQQExsQWTKZhT8/pub?output=csv"
+      response = await fetch(url)
+      csv_text = await response.text()
+  
+      from io import StringIO
+      df = pd.read_csv(StringIO(csv_text))
+  
+      summary = df.groupby('Category')['Amount'].sum()
+  
+      display(summary.to_frame(), target="summary")
+  
+      fig, ax = plt.subplots()
+      summary.plot(kind='bar', ax=ax, color='cornflowerblue')
+      ax.set_title('Dépenses par catégorie')
+      ax.set_ylabel('Montant (€)')
+      display(fig, target="plot")
+      plt.close(fig)
+  
+  asyncio.ensure_future(load_and_display())
   </py-script>
+  
 </body>
 </html>
+
 
