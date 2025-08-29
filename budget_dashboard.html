@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Budget Dashboard from Google Sheets</title>
+  <!-- Use the latest PyScript CDN -->
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  <py-env>
+    - pandas
+    - matplotlib
+  </py-env>
+</head>
+<body>
+  <h2>Budget Dashboard (Google Sheets CSV)</h2>
+  <div id="summary"></div>
+  <div id="plot"></div>
+
+  <py-script>
+import pandas as pd
+import matplotlib.pyplot as plt
+from pyscript import display
+import asyncio
+from js import fetch
+
+async def load_and_display():
+    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpNBdF8vKtqhSmNhhBm9oKvl1WOKzX6hOqyDKDkL26diSugK99i4AZdsAC070pgEgQQExsQWTKZhT8/pub?output=csv"
+    response = await fetch(url)
+    csv_text = await response.text()
+    from io import StringIO
+    df = pd.read_csv(StringIO(csv_text))
+    
+    # Summarize expenses by Category
+    summary = df.groupby('Category')['Amount'].sum()
+    
+    # Display summary table
+    display(summary.to_frame(), target="summary")
+    
+    # Plot bar chart
+    fig, ax = plt.subplots()
+    summary.plot(kind='bar', ax=ax, color='cornflowerblue')
+    ax.set_title('Dépenses par catégorie')
+    ax.set_ylabel('Montant (€)')
+    display(fig, target="plot")
+    plt.close(fig)
+
+asyncio.ensure_future(load_and_display())
+  </py-script>
+</body>
+</html>
